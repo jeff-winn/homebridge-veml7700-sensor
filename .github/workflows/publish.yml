@@ -36,26 +36,3 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
-
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@master
-        with:
-          node-version: 14
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@jeff-winn'
-
-      - name: Set environment variables
-        uses: FranzDiebold/github-env-vars-action@v2
-      
-      - run: npm version ${{ env.CI_ACTION_REF_NAME }} --git-tag-version false
-      - run: npm install
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
