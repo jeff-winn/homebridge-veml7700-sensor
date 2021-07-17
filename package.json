@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-accessory-example",
-  "version": "1.0.0",
+  "name": "homebridge-rain-clik",
+  "version": "0.1.0",
   "description": "An accessory plugin for the Hunter Rain-Clik WR sensor.",
   "main": "dist/accessory.js",
   "scripts": {
