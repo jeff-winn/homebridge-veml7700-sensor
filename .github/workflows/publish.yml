@@ -31,7 +31,7 @@ jobs:
       - name: Set environment variables
         uses: FranzDiebold/github-env-vars-action@v2
 
-      - run: npm version ${{ env.CI_ACTION_REF_NAME }}
+      - run: npm version ${{ env.CI_ACTION_REF_NAME }} --git-tag-version false
       - run: npm install
       #- run: npm publish --access public
       #  env:
@@ -54,7 +54,7 @@ jobs:
       - name: Set environment variables
         uses: FranzDiebold/github-env-vars-action@v2
       
-      - run: npm version ${{ env.CI_ACTION_REF_NAME }}
+      - run: npm version ${{ env.CI_ACTION_REF_NAME }} --git-tag-version false
       - run: npm install
       - run: npm publish
         env:
