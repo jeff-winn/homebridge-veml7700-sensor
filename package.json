@@ -12,7 +12,8 @@
     "homebridge": ">=1.3.4"
   },
   "keywords": [
-    "homebridge-rain-clik"
+    "homebridge-plugin",
+    "rain-clik"
   ],
   "license": "ISC",
   "files": [
