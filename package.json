@@ -1,5 +1,5 @@
 {
-  "name": "@jeff-winn/homebridge-rain-clik",
+  "name": "homebridge-rain-clik",
   "description": "An accessory plugin for the Hunter Rain-Clik WR sensor.",
   "main": "dist/accessory.js",
   "scripts": {
