@@ -33,5 +33,5 @@
     "rimraf": "^3.0.2",
     "homebridge": "^1.0.4"
   },
-  "version": "1.0.0"
+  "version": "0.1.0"
 }
