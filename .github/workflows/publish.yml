@@ -27,10 +27,15 @@ jobs:
         with:
           node-version: 14
           registry-url: 'https://registry.npmjs.org/'
+
+      - name: Set environment variables
+        uses: FranzDiebold/github-env-vars-action@v2
+
+      - run: npm version ${{ env.CI_ACTION_REF_NAME }}
       - run: npm install
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      #- run: npm publish --access public
+      #  env:
+      #    NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
   publish-gpr:
     #needs: build
@@ -46,6 +51,10 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@jeff-winn'
 
+      - name: Set environment variables
+        uses: FranzDiebold/github-env-vars-action@v2
+      
+      - run: npm version ${{ env.CI_ACTION_REF_NAME }}
       - run: npm install
       - run: npm publish
         env:
