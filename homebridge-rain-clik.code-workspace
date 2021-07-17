@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "./"
+		}
+	],	
+	"settings": {
+		"files.exclude": {
+			"docs": true,
+			"**/bin": true,
+			"**/obj": true,			
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true
+		}
+	}
+}
