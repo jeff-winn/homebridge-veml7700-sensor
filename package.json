@@ -4,7 +4,7 @@
   "main": "dist/accessory.js",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "rimraf ./dist && tsc",
+    "build": "npm run clean && tsc && npm test",
     "test": "jest --collect-coverage",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean"

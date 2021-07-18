@@ -7,6 +7,8 @@
 	"settings": {
 		"files.exclude": {
 			"docs": true,
+			"coverage": true,
+			"dist": true,
 			"**/bin": true,
 			"**/obj": true,			
 			"**/.git": true,
