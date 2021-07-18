@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "rimraf ./dist && tsc",
+    "test": "jest --collect-coverage",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean"
   },
@@ -30,9 +31,12 @@
     "url": "https://github.com/jeff-winn/homebridge-rain-clik/issues"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.24",
     "@types/node": "10.17.19",
-    "typescript": "^3.8.3",
+    "homebridge": "^1.0.4",
+    "jest": "^27.0.6",
     "rimraf": "^3.0.2",
-    "homebridge": "^1.0.4"
+    "ts-jest": "^27.0.3",
+    "typescript": "^3.8.3"
   }
 }
