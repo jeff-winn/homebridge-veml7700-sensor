@@ -1,6 +1,5 @@
-# homebridge-rain-clik
-HomeBridge connector for the Rain Clik sensor
+# homebridge-veml7700
+HomeBridge connector for the Adafruit VEML7700 lux sensor.
 
-The Hunter Industries Rain Clik receiver does not natively support any API to access the information. As such, the use of this connector does require a separate Raspberry Pi based wireless solution.
-
-https://github.com/jeff-winn/dotnet-rain-clik
+The Adafruit VEML7700 lux sensor does not natively support any API to access the information. As such, the use of this connector does require a separate Raspberry Pi based wireless solution.
+https://github.com/jeff-winn/dotnet-veml7700

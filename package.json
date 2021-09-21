@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-rain-clik",
-  "description": "An accessory plugin for the Hunter Rain-Clik WR sensor.",
+  "name": "homebridge-veml7700",
+  "description": "An accessory plugin for the Adafruit VEML7700 lux sensor.",
   "main": "dist/accessory.js",
   "scripts": {
     "clean": "rimraf ./dist",
@@ -15,20 +15,21 @@
   "keywords": [
     "homebridge",
     "homebridge-plugin",
-    "rain-sensor"
+    "adafruit",
+    "veml7700"
   ],
   "license": "ISC",
   "files": [
     "LICENSE",
     "dist"
   ],
-  "homepage": "https://github.com/jeff-winn/homebridge-rain-clik",
+  "homepage": "https://github.com/jeff-winn/homebridge-veml7700",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeff-winn/homebridge-rain-clik.git"
+    "url": "https://github.com/jeff-winn/homebridge-veml7700.git"
   },
   "bugs": {
-    "url": "https://github.com/jeff-winn/homebridge-rain-clik/issues"
+    "url": "https://github.com/jeff-winn/homebridge-veml7700/issues"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

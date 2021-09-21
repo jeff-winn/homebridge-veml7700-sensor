@@ -18,10 +18,10 @@ let hap: HAP;
  */
 export = (api: API) => {
   hap = api.hap;
-  api.registerAccessory("Wireless Rain-Clik Receiver", RainClikSensor);
+  api.registerAccessory("Adafruit VEML7700 Lux Sensor", Veml7700LuxSensor);
 };
 
-class RainClikSensor implements AccessoryPlugin {
+class Veml7700LuxSensor implements AccessoryPlugin {
   private readonly log: Logging;
   private readonly name: string;
   private contactDetected = false;
@@ -41,8 +41,8 @@ class RainClikSensor implements AccessoryPlugin {
       });
 
     this.informationService = new hap.Service.AccessoryInformation()
-      .setCharacteristic(hap.Characteristic.Manufacturer, "Hunter Industries")
-      .setCharacteristic(hap.Characteristic.Model, "WR-CLIK-R");
+      .setCharacteristic(hap.Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(hap.Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
   }
