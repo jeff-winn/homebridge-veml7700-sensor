@@ -28,6 +28,8 @@ class Veml7700Accessory implements AccessoryPlugin {
   private readonly informationService: Service;
   private readonly client: LightSensorClient;
 
+  private contactDetected: boolean = false;
+
   constructor(private log: Logging, c: AccessoryConfig, private api: API) {
     this.config = c as Veml7700AccessoryConfig;
     this.name = this.config.name;
@@ -44,6 +46,8 @@ class Veml7700Accessory implements AccessoryPlugin {
       this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
       this.sensorService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
         .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
+
+      this.beginPollingContactSensorState();
     }
 
     this.informationService = new this.hap.Service.AccessoryInformation()
@@ -53,8 +57,35 @@ class Veml7700Accessory implements AccessoryPlugin {
     log.info("Sensor finished initializing!");
   }
   
+  private beginPollingContactSensorState(): void {
+    setTimeout(this.monitorContactSensorState.bind(this), this.config.pollingInterval);
+  }
+
+  private monitorContactSensorState(): void {
+    var newValue = this.checkContactSensorState();
+    if (newValue != this.contactDetected) {
+      this.contactDetected = newValue;
+
+      this.log.info("Contact: " + this.contactDetected ? "DETECTED" : "NOT_DETECTED");
+      this.sensorService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
+        .setValue(this.contactDetected);
+    }
+
+    this.beginPollingContactSensorState();
+  }
+  
   private onContactSensorGetCallback(callback: CharacteristicGetCallback): void {
-    var contactDetected = false;
+    var newValue = this.checkContactSensorState();
+    if (newValue != this.contactDetected) {
+      this.contactDetected = newValue;
+
+      this.log.info("Contact: " + this.contactDetected ? "DETECTED" : "NOT_DETECTED");
+      callback(undefined, this.contactDetected);  
+    }
+  }
+
+  private checkContactSensorState(): boolean {
+    var result = false;
 
     var data = this.client.inspect();
     if (data === undefined) {
@@ -65,23 +96,22 @@ class Veml7700Accessory implements AccessoryPlugin {
       this.log.debug("Lux: " + lux);
 
       if (this.config.contact === undefined) {
-        contactDetected = lux > 0;
+        result = lux > 0;
       }
       else {
         if (this.config.contact.min !== undefined && this.config.contact.max !== undefined) {
-          contactDetected = lux >= this.config.contact.min && lux <= this.config.contact.max;
+          result = lux >= this.config.contact.min && lux <= this.config.contact.max;
         }
         else if (this.config.contact.min !== undefined) {
-          contactDetected = lux >= this.config.contact.min;
+          result = lux >= this.config.contact.min;
         }
         else if (this.config.contact.max !== undefined) {
-          contactDetected = lux <= this.config.contact.max;
+          result = lux <= this.config.contact.max;
         }
       }
     }
 
-    this.log.info("Contact: " + contactDetected ? "DETECTED" : "NOT_DETECTED");
-    callback(undefined, contactDetected);
+    return result;
   }
 
   private onLightSensorGetCallback(callback: CharacteristicGetCallback): void {
