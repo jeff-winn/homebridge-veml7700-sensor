@@ -39,5 +39,6 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.3",
     "typescript": "^3.8.3"
-  }
+  },
+  "dependencies": {}
 }

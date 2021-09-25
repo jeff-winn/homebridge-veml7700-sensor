@@ -18,13 +18,13 @@ let hap: HAP;
  */
 export = (api: API) => {
   hap = api.hap;
-  api.registerAccessory("Adafruit VEML7700 Lux Sensor", Veml7700LuxSensor);
+  api.registerAccessory("Adafruit VEML7700 Light Sensor", Veml7700LightSensor);
 };
 
-class Veml7700LuxSensor implements AccessoryPlugin {
+class Veml7700LightSensor implements AccessoryPlugin {
   private readonly log: Logging;
   private readonly name: string;
-  private contactDetected = false;
+  private currentValue: number = 0;
 
   private readonly sensorService: Service;
   private readonly informationService: Service;
@@ -33,11 +33,13 @@ class Veml7700LuxSensor implements AccessoryPlugin {
     this.log = log;
     this.name = config.name;
 
-    this.sensorService = new hap.Service.ContactSensor(this.name);
-    this.sensorService.getCharacteristic(hap.Characteristic.ContactSensorState)
+    this.sensorService = new hap.Service.LightSensor(this.name);
+    this.sensorService.getCharacteristic(hap.Characteristic.CurrentAmbientLightLevel)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info("Current state of the sensor was returned: " + (this.contactDetected ? "DETECTED": "NOT_DETECTED"));
-        callback(undefined, this.contactDetected);
+        this.currentValue = 0.0001;        
+        log.info("Current state of the sensor was returned: " + this.currentValue);
+
+        callback(undefined, this.currentValue);
       });
 
     this.informationService = new hap.Service.AccessoryInformation()
@@ -45,6 +47,13 @@ class Veml7700LuxSensor implements AccessoryPlugin {
       .setCharacteristic(hap.Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
+  }
+
+  onGetCurrentAmbientLightLevel(): number {
+    this.currentValue = 0.001;
+    this.log.info("Current state of the sensor was returned: " + this.currentValue);
+
+    return this.currentValue;
   }
 
   /*
