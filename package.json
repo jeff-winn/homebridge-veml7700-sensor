@@ -1,6 +1,6 @@
 {
   "name": "homebridge-veml7700-sensor",
-  "description": "An accessory plugin for the Adafruit VEML7700 lux sensor.",
+  "description": "An accessory plugin for the Adafruit VEML7700 light sensor.",
   "main": "dist/accessory.js",
   "scripts": {
     "clean": "rimraf ./dist",
