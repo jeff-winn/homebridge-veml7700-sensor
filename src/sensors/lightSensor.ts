@@ -4,26 +4,16 @@ import {
   API, 
   CharacteristicEventTypes, 
   CharacteristicGetCallback, 
-  CharacteristicSetCallback, 
-  CharacteristicValue, 
   HAP, 
   Logging, 
   Service 
 } from "homebridge";
 
-let hap: HAP;
-
-/*
- * Initializer function called when the plugin is loaded.
- */
-export = (api: API) => {
-  hap = api.hap;
-  api.registerAccessory("Adafruit VEML7700 Light Sensor", Veml7700LightSensor);
-};
-
-class Veml7700LightSensor implements AccessoryPlugin {
+export class Veml7700LightSensor implements AccessoryPlugin {
   private readonly log: Logging;
   private readonly name: string;
+  private readonly hap: HAP;
+
   private currentValue: number = 0;
 
   private readonly sensorService: Service;
@@ -32,9 +22,10 @@ class Veml7700LightSensor implements AccessoryPlugin {
   constructor(log: Logging, config: AccessoryConfig, api: API) {
     this.log = log;
     this.name = config.name;
+    this.hap = api.hap;
 
-    this.sensorService = new hap.Service.LightSensor(this.name);
-    this.sensorService.getCharacteristic(hap.Characteristic.CurrentAmbientLightLevel)
+    this.sensorService = new this.hap.Service.LightSensor(this.name);
+    this.sensorService.getCharacteristic(this.hap.Characteristic.CurrentAmbientLightLevel)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         this.currentValue = 0.0001;        
         log.info("Current state of the sensor was returned: " + this.currentValue);
@@ -42,9 +33,9 @@ class Veml7700LightSensor implements AccessoryPlugin {
         callback(undefined, this.currentValue);
       });
 
-    this.informationService = new hap.Service.AccessoryInformation()
-      .setCharacteristic(hap.Characteristic.Manufacturer, "Adafruit Industries")
-      .setCharacteristic(hap.Characteristic.Model, "VEML7700");
+    this.informationService = new this.hap.Service.AccessoryInformation()
+      .setCharacteristic(this.hap.Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(this.hap.Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
   }
