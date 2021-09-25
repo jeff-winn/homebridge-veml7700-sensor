@@ -8,6 +8,9 @@ import {
   Logging, 
   Service 
 } from "homebridge";
+import { LightSensorClientImpl } from "./clients/impl/LightSensorClientImpl";
+import { LightSensorClient } from "./clients/LightSensorClient";
+import { AccessoryMode, Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
 
 /*
  * Initializer function called when the plugin is loaded.
@@ -17,40 +20,30 @@ export = (api: API) => {
 };
 
 class Veml7700Accessory implements AccessoryPlugin {
-  private readonly log: Logging;
+  private readonly config: Veml7700AccessoryConfig;
   private readonly name: string;
   private readonly hap: HAP;
-
-  private currentValue: number = 0;
-  private contactDetected: boolean = false;
   
-  private readonly contactService?: Service;
-  private readonly lightService?: Service;
+  private readonly sensorService: Service;
   private readonly informationService: Service;
+  private readonly client: LightSensorClient;
 
-  constructor(log: Logging, config: AccessoryConfig, api: API) {
-    this.log = log;
-    this.name = config.name;
+  constructor(private log: Logging, c: AccessoryConfig, private api: API) {
+    this.config = c as Veml7700AccessoryConfig;
+    this.name = this.config.name;
     this.hap = api.hap;
+    
+    this.client = new LightSensorClientImpl(this.config.url);
 
-    if (config.contactSensor) {
-      this.contactService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
-      this.contactService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
-        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-          log.info("Current state of the sensor was returned: " + (this.contactDetected ? "DETECTED": "NOT_DETECTED"));
-          callback(undefined, this.contactDetected);
-        });  
+    if (this.config.mode == AccessoryMode.light) {
+      this.sensorService = new this.hap.Service.LightSensor(this.name + "Light Sensor");
+      this.sensorService.getCharacteristic(this.hap.Characteristic.CurrentAmbientLightLevel)
+        .on(CharacteristicEventTypes.GET, this.onLightSensorGetCallback.bind(this));
     }
-
-    if (config.lightSensor) {
-      this.lightService = new this.hap.Service.LightSensor(this.name + "Light Sensor");
-      this.lightService.getCharacteristic(this.hap.Characteristic.CurrentAmbientLightLevel)
-        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-          this.currentValue = 0.0001;        
-          log.info("Current state of the sensor was returned: " + this.currentValue);
-
-          callback(undefined, this.currentValue);
-        });
+    else {
+      this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
+      this.sensorService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
+        .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
     }
 
     this.informationService = new this.hap.Service.AccessoryInformation()
@@ -60,6 +53,45 @@ class Veml7700Accessory implements AccessoryPlugin {
     log.info("Sensor finished initializing!");
   }
   
+  private onContactSensorGetCallback(callback: CharacteristicGetCallback): void {
+    var contactDetected = false;
+
+    var data = this.client.inspect();
+    if (data === undefined) {
+      this.log.warn("State of the sensor was not returned.");  
+    }
+    else {
+      var lux = data.lux;
+      this.log.debug("Lux: " + lux);
+
+      if (this.config.contact === undefined) {
+        contactDetected = lux > 0;
+      }
+      else {
+        if (this.config.contact.min !== undefined && this.config.contact.max !== undefined) {
+          contactDetected = lux >= this.config.contact.min && lux <= this.config.contact.max;
+        }
+        else if (this.config.contact.min !== undefined) {
+          contactDetected = lux >= this.config.contact.min;
+        }
+        else if (this.config.contact.max !== undefined) {
+          contactDetected = lux <= this.config.contact.max;
+        }
+      }
+    }
+
+    this.log.info("Contact: " + contactDetected ? "DETECTED" : "NOT_DETECTED");
+    callback(undefined, contactDetected);
+  }
+
+  private onLightSensorGetCallback(callback: CharacteristicGetCallback): void {
+    var result = this.client.inspect();
+    var lux = result?.lux;
+
+    this.log.info("Lux: " + lux);
+    callback(undefined, lux);
+  }
+
   /*
    * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
    * Typical this only ever happens at the pairing process.
@@ -73,17 +105,9 @@ class Veml7700Accessory implements AccessoryPlugin {
    * It should return all services which should be added to the accessory.
    */
   getServices(): Service[] {
-    let services: Service[] = [];
-    services.push(this.informationService);
-    
-    if (this.contactService) {
-      services.push(this.contactService);
-    }
-
-    if (this.lightService) {
-      services.push(this.lightService);
-    }
-
-    return services;
+    return [
+      this.informationService,
+      this.sensorService
+    ];
   }
 }
