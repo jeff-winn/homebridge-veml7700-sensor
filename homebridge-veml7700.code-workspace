@@ -6,6 +6,7 @@
 	],	
 	"settings": {
 		"files.exclude": {
+			"node_modules": true,
 			"docs": true,
 			"coverage": true,
 			"dist": true,
