@@ -2,6 +2,7 @@ import {
   AccessoryConfig, 
   AccessoryPlugin, 
   API, 
+  Characteristic, 
   CharacteristicEventTypes, 
   CharacteristicGetCallback, 
   HAP, 
@@ -28,7 +29,7 @@ class Veml7700Accessory implements AccessoryPlugin {
   private readonly informationService: Service;
   private readonly client: LightSensorClient;
 
-  private contactDetected: boolean = false;
+  private contactState?: number;
 
   constructor(private log: Logging, c: AccessoryConfig, private api: API) {
     this.config = c as Veml7700AccessoryConfig;
@@ -39,20 +40,20 @@ class Veml7700Accessory implements AccessoryPlugin {
 
     if (this.config.mode == AccessoryMode.light) {
       this.sensorService = new this.hap.Service.LightSensor(this.name + "Light Sensor");
-      this.sensorService.getCharacteristic(this.hap.Characteristic.CurrentAmbientLightLevel)
+      this.sensorService.getCharacteristic(Characteristic.CurrentAmbientLightLevel)
         .on(CharacteristicEventTypes.GET, this.onLightSensorGetCallback.bind(this));
     }
     else {
       this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
-      this.sensorService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
+      this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
         .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
 
       this.beginPollingContactSensorState();
     }
 
     this.informationService = new this.hap.Service.AccessoryInformation()
-      .setCharacteristic(this.hap.Characteristic.Manufacturer, "Adafruit Industries")
-      .setCharacteristic(this.hap.Characteristic.Model, "VEML7700");
+      .setCharacteristic(Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
   }
@@ -63,12 +64,13 @@ class Veml7700Accessory implements AccessoryPlugin {
 
   private monitorContactSensorState(): void {
     var newValue = this.checkContactSensorState();
-    if (newValue != this.contactDetected) {
-      this.contactDetected = newValue;
+    if (newValue != this.contactState) {
+      this.contactState = newValue;
+      this.log.info("Contact: " + (this.contactState == Characteristic.ContactSensorState.CONTACT_DETECTED ? 
+        "DETECTED" : "NOT_DETECTED"));
 
-      this.log.info("Contact: " + this.contactDetected ? "DETECTED" : "NOT_DETECTED");
-      this.sensorService.getCharacteristic(this.hap.Characteristic.ContactSensorState)
-        .setValue(this.contactDetected);
+      this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+        .updateValue(this.contactState);
     }
 
     this.beginPollingContactSensorState();
@@ -76,15 +78,16 @@ class Veml7700Accessory implements AccessoryPlugin {
   
   private onContactSensorGetCallback(callback: CharacteristicGetCallback): void {
     var newValue = this.checkContactSensorState();
-    if (newValue != this.contactDetected) {
-      this.contactDetected = newValue;
+    if (newValue != this.contactState) {
+      this.contactState = newValue;
 
-      this.log.info("Contact: " + this.contactDetected ? "DETECTED" : "NOT_DETECTED");
-      callback(undefined, this.contactDetected);  
+      this.log.info("Contact: " + (this.contactState == Characteristic.ContactSensorState.CONTACT_DETECTED ?
+         "DETECTED" : "NOT_DETECTED"));
+      callback(undefined, this.contactState);  
     }
   }
 
-  private checkContactSensorState(): boolean {
+  private checkContactSensorState(): number {
     var result = false;
 
     var data = this.client.inspect();
@@ -111,7 +114,11 @@ class Veml7700Accessory implements AccessoryPlugin {
       }
     }
 
-    return result;
+    if (result) {
+      return Characteristic.ContactSensorState.CONTACT_DETECTED;
+    }
+
+    return Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
   }
 
   private onLightSensorGetCallback(callback: CharacteristicGetCallback): void {
