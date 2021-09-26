@@ -38,18 +38,9 @@ class Veml7700Accessory implements AccessoryPlugin {
     
     this.client = new LightSensorClientImpl(this.config.url);
 
-    if (this.config.mode == AccessoryMode.light) {
-      this.sensorService = new this.hap.Service.LightSensor(this.name + "Light Sensor");
-      this.sensorService.getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-        .on(CharacteristicEventTypes.GET, this.onLightSensorGetCallback.bind(this));
-    }
-    else {
-      this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
-      this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
-        .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
-
-      this.beginPollingContactSensorState();
-    }
+    this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
+    this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+      .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
 
     this.informationService = new this.hap.Service.AccessoryInformation()
       .setCharacteristic(Characteristic.Manufacturer, "Adafruit Industries")
@@ -121,14 +112,6 @@ class Veml7700Accessory implements AccessoryPlugin {
     return Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
   }
 
-  private onLightSensorGetCallback(callback: CharacteristicGetCallback): void {
-    var result = this.client.inspect();
-    var lux = result?.lux;
-
-    this.log.info("Lux: " + lux);
-    callback(undefined, lux);
-  }
-
   /*
    * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
    * Typical this only ever happens at the pairing process.
@@ -142,6 +125,8 @@ class Veml7700Accessory implements AccessoryPlugin {
    * It should return all services which should be added to the accessory.
    */
   getServices(): Service[] {
+    this.beginPollingContactSensorState();
+
     return [
       this.informationService,
       this.sensorService
