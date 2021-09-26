@@ -17,7 +17,7 @@ import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
  * Initializer function called when the plugin is loaded.
  */
 export = (api: API) => {
-  api.registerAccessory("Adafruit VEML7700", Veml7700Accessory);
+  api.registerAccessory("Adafruit VEML7700 Lux Sensor", Veml7700Accessory);
 };
 
 class Veml7700Accessory implements AccessoryPlugin {
@@ -39,7 +39,7 @@ class Veml7700Accessory implements AccessoryPlugin {
     this.client = new LightSensorClientImpl(this.config.url);
     this.contactState = Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
-    this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
+    this.sensorService = new this.hap.Service.ContactSensor(this.name);
     this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
       .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
 
