@@ -2,49 +2,108 @@ import {
   AccessoryConfig, 
   AccessoryPlugin, 
   API, 
+  Characteristic, 
   CharacteristicEventTypes, 
   CharacteristicGetCallback, 
-  CharacteristicSetCallback, 
-  CharacteristicValue, 
   HAP, 
   Logging, 
   Service 
 } from "homebridge";
-
-let hap: HAP;
+import { LightSensorClientImpl } from "./clients/impl/LightSensorClientImpl";
+import { LightSensorClient } from "./clients/LightSensorClient";
+import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
 
 /*
  * Initializer function called when the plugin is loaded.
  */
 export = (api: API) => {
-  hap = api.hap;
-  api.registerAccessory("Adafruit VEML7700 Lux Sensor", Veml7700LuxSensor);
+  api.registerAccessory("Adafruit VEML7700", Veml7700Accessory);
 };
 
-class Veml7700LuxSensor implements AccessoryPlugin {
-  private readonly log: Logging;
+class Veml7700Accessory implements AccessoryPlugin {
+  private readonly config: Veml7700AccessoryConfig;
   private readonly name: string;
-  private contactDetected = false;
-
+  private readonly hap: HAP;
+  
   private readonly sensorService: Service;
   private readonly informationService: Service;
+  private readonly client: LightSensorClient;
 
-  constructor(log: Logging, config: AccessoryConfig, api: API) {
-    this.log = log;
-    this.name = config.name;
+  private contactState: number;
 
-    this.sensorService = new hap.Service.ContactSensor(this.name);
-    this.sensorService.getCharacteristic(hap.Characteristic.ContactSensorState)
-      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info("Current state of the sensor was returned: " + (this.contactDetected ? "DETECTED": "NOT_DETECTED"));
-        callback(undefined, this.contactDetected);
-      });
+  constructor(private log: Logging, c: AccessoryConfig, private api: API) {
+    this.config = c as Veml7700AccessoryConfig;
+    this.name = this.config.name;
+    this.hap = api.hap;
+    
+    this.client = new LightSensorClientImpl(this.config.url);
+    this.contactState = Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
-    this.informationService = new hap.Service.AccessoryInformation()
-      .setCharacteristic(hap.Characteristic.Manufacturer, "Adafruit Industries")
-      .setCharacteristic(hap.Characteristic.Model, "VEML7700");
+    this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
+    this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+      .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
+
+    this.informationService = new this.hap.Service.AccessoryInformation()
+      .setCharacteristic(Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
+  }
+  
+  private beginPollingContactSensorState(): void {
+    setTimeout(this.monitorContactSensorState.bind(this), this.config.pollingInterval);
+  }
+
+  private async monitorContactSensorState(): Promise<void> {
+    var newValue = await this.checkContactSensorState();
+    if (newValue != this.contactState) {
+      this.contactState = newValue;
+      this.log.info("Contact: " + (this.contactState == Characteristic.ContactSensorState.CONTACT_DETECTED ? 
+        "DETECTED" : "NOT_DETECTED"));
+
+      this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+        .updateValue(this.contactState);
+    }
+
+    this.beginPollingContactSensorState();
+  }
+  
+  private onContactSensorGetCallback(callback: CharacteristicGetCallback): void {
+      callback(undefined, this.contactState);  
+  }
+
+  private async checkContactSensorState(): Promise<number> {
+    var result = false;
+
+    var data = await this.client.inspect();
+    if (data === undefined) {
+      this.log.warn("State of the sensor was not returned.");  
+    }
+    else {
+      var lux = data.lux;
+      this.log.debug("Lux: " + lux);
+
+      if (this.config.contact === undefined) {
+        result = lux > 0;
+      }
+      else {
+        if (this.config.contact.min !== undefined && this.config.contact.max !== undefined) {
+          result = lux >= this.config.contact.min && lux <= this.config.contact.max;
+        }
+        else if (this.config.contact.min !== undefined) {
+          result = lux >= this.config.contact.min;
+        }
+        else if (this.config.contact.max !== undefined) {
+          result = lux <= this.config.contact.max;
+        }
+      }
+    }
+
+    if (result) {
+      return Characteristic.ContactSensorState.CONTACT_DETECTED;
+    }
+
+    return Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
   }
 
   /*
@@ -60,9 +119,11 @@ class Veml7700LuxSensor implements AccessoryPlugin {
    * It should return all services which should be added to the accessory.
    */
   getServices(): Service[] {
+    this.beginPollingContactSensorState();
+
     return [
       this.informationService,
-      this.sensorService,
+      this.sensorService
     ];
   }
 }
