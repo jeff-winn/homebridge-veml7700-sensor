@@ -9,7 +9,6 @@
 			"node_modules": true,
 			"docs": true,
 			"coverage": true,
-			"dist": true,
 			"**/bin": true,
 			"**/obj": true,			
 			"**/.git": true,
