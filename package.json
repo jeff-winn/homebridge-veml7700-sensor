@@ -1,5 +1,6 @@
 {
   "name": "homebridge-veml7700-sensor",
+  "displayName": "Homebridge VEML7700 Sensor",
   "description": "An accessory plugin for the Adafruit VEML7700 light sensor.",
   "main": "dist/accessory.js",
   "scripts": {
