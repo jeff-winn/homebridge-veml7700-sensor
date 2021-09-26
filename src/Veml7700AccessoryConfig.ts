@@ -5,8 +5,3 @@ export interface Veml7700AccessoryConfig extends AccessoryConfig {
     url: string;
     minimum: number | undefined;
 }
-
-export enum AccessoryMode {
-    contact = 1,
-    light
-}
