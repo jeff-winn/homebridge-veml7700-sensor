@@ -11,7 +11,7 @@ import {
 } from "homebridge";
 import { LightSensorClientImpl } from "./clients/impl/LightSensorClientImpl";
 import { LightSensorClient } from "./clients/LightSensorClient";
-import { AccessoryMode, Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
+import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
 
 /*
  * Initializer function called when the plugin is loaded.
@@ -29,7 +29,7 @@ class Veml7700Accessory implements AccessoryPlugin {
   private readonly informationService: Service;
   private readonly client: LightSensorClient;
 
-  private contactState?: number;
+  private contactState: number;
 
   constructor(private log: Logging, c: AccessoryConfig, private api: API) {
     this.config = c as Veml7700AccessoryConfig;
@@ -37,6 +37,7 @@ class Veml7700Accessory implements AccessoryPlugin {
     this.hap = api.hap;
     
     this.client = new LightSensorClientImpl(this.config.url);
+    this.contactState = Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
     this.sensorService = new this.hap.Service.ContactSensor(this.name + " Contact Sensor");
     this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
