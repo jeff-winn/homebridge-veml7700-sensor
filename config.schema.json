@@ -1,0 +1,37 @@
+{
+    "pluginAlias": "Adafruit VEML7700 Lux Sensor",
+    "pluginType": "accessory",
+    "singular": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "required": true
+        },
+        "url": {
+          "title": "Url",
+          "description": "The URL to access the state of the sensor, do not forget to change the sensor device address!",
+          "type": "string",
+          "default": "http://raspberrypi:8080/api/v1/sensor/{deviceAddress}",
+          "required": true
+        },
+        "pollingInterval": {
+          "title": "Polling Interval",
+          "description": "The duration of time (in seconds) between checking state of the sensor.",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "minimum": 1
+        },
+        "minimum": {
+          "title": "Minimum",
+          "description": "The minimum lux required to trigger the contact sensor.",
+          "type": "integer",
+          "required": true,
+          "default": 100
+        }
+      }
+    }
+  }

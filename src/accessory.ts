@@ -24,17 +24,19 @@ class Veml7700Accessory implements AccessoryPlugin {
   private readonly config: Veml7700AccessoryConfig;
   private readonly name: string;
   private readonly hap: HAP;
-  
+  private readonly pollingInterval: number;
+
   private readonly sensorService: Service;
   private readonly informationService: Service;
   private readonly client: LightSensorClient;
-
+  
   private contactState: number;
 
   constructor(private log: Logging, c: AccessoryConfig, private api: API) {
     this.config = c as Veml7700AccessoryConfig;
     this.name = this.config.name;
     this.hap = api.hap;
+    this.pollingInterval = this.config.pollingInterval * 1000;
     
     this.client = new LightSensorClientImpl(this.config.url);
     this.contactState = Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
@@ -51,7 +53,7 @@ class Veml7700Accessory implements AccessoryPlugin {
   }
   
   private beginPollingContactSensorState(): void {
-    setTimeout(this.monitorContactSensorState.bind(this), this.config.pollingInterval);
+    setTimeout(this.monitorContactSensorState.bind(this), this.pollingInterval);
   }
 
   private async monitorContactSensorState(): Promise<void> {
@@ -83,20 +85,12 @@ class Veml7700Accessory implements AccessoryPlugin {
       var lux = data.lux;
       this.log.debug("Lux: " + lux);
 
-      if (this.config.contact === undefined) {
+      if (this.config.minimum === undefined) {
         result = lux > 0;
       }
       else {
-        if (this.config.contact.min !== undefined && this.config.contact.max !== undefined) {
-          result = lux >= this.config.contact.min && lux <= this.config.contact.max;
-        }
-        else if (this.config.contact.min !== undefined) {
-          result = lux >= this.config.contact.min;
-        }
-        else if (this.config.contact.max !== undefined) {
-          result = lux <= this.config.contact.max;
-        }
-      }
+        result = lux >= this.config.minimum;
+      }      
     }
 
     if (result) {
