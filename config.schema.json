@@ -12,7 +12,7 @@
         },
         "url": {
           "title": "Url",
-          "description": "The URL to access the state of the sensor, do not forget to change the sensor device address!",
+          "description": "The URL to access the state of the sensor, do not forget to change the sensor I2C device address!",
           "type": "string",
           "default": "http://raspberrypi:8080/api/v1/sensor/{deviceAddress}",
           "required": true
