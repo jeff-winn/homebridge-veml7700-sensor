@@ -21,7 +21,8 @@
   "license": "ISC",
   "files": [
     "LICENSE",
-    "dist"
+    "dist",
+    "config.schema.json"
   ],
   "homepage": "https://github.com/jeff-winn/homebridge-veml7700-sensor",
   "repository": {
