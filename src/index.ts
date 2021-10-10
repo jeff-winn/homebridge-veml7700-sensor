@@ -17,7 +17,7 @@ import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
  * Initializer function called when the plugin is loaded.
  */
 export = (api: API) => {
-  api.registerAccessory("Adafruit VEML7700 Lux Sensor", Veml7700Accessory);
+  api.registerAccessory("veml7700", Veml7700Accessory);
 };
 
 class Veml7700Accessory implements AccessoryPlugin {
