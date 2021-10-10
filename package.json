@@ -2,7 +2,9 @@
   "name": "homebridge-veml7700-sensor",
   "displayName": "Homebridge VEML7700 Sensor",
   "description": "An accessory plugin for the Adafruit VEML7700 light sensor.",
-  "main": "dist/accessory.js",
+  "license": "ISC",
+  "homepage": "https://github.com/jeff-winn/homebridge-veml7700-sensor",
+  "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "npm run clean && tsc && npm test",
@@ -10,21 +12,11 @@
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean"
   },
-  "engines": {
-    "node": ">=14.17.6",
-    "homebridge": ">=1.3.4"
-  },
-  "keywords": [
-    "homebridge-plugin",
-    "veml7700"
-  ],
-  "license": "ISC",
   "files": [
     "LICENSE",
     "dist",
     "config.schema.json"
   ],
-  "homepage": "https://github.com/jeff-winn/homebridge-veml7700-sensor",
   "repository": {
     "type": "git",
     "url": "https://github.com/jeff-winn/homebridge-veml7700-sensor.git"
@@ -32,17 +24,30 @@
   "bugs": {
     "url": "https://github.com/jeff-winn/homebridge-veml7700-sensor/issues"
   },
-  "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "@types/node": "10.17.19",
-    "@types/node-fetch": "^2.5.7",
-    "homebridge": "^1.0.4",
-    "jest": "^27.0.6",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.3",
-    "typescript": "^3.8.3"
+  "engines": {
+    "node": ">=12.13.0",
+    "homebridge": ">=1.3.0"
   },
+  "keywords": [
+    "homebridge-plugin",
+    "veml7700"
+  ],
   "dependencies": {
     "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "^14.14.31",
+    "@types/node-fetch": "^2.5.7",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
+    "eslint": "^7.21.0",
+    "homebridge": "^1.3.1",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.1.1",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.2.2"
   }
 }

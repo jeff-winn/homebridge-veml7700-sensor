@@ -25,6 +25,7 @@ class Veml7700Accessory implements AccessoryPlugin {
   private readonly name: string;
   private readonly hap: HAP;
   private readonly pollingInterval: number;
+  private readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
 
   private readonly sensorService: Service;
   private readonly informationService: Service;
@@ -39,15 +40,15 @@ class Veml7700Accessory implements AccessoryPlugin {
     this.pollingInterval = this.config.pollingInterval * 1000;
     
     this.client = new LightSensorClientImpl(this.config.url);
-    this.contactState = Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+    this.contactState = this.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
     this.sensorService = new this.hap.Service.ContactSensor(this.name);
-    this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+    this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState)
       .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
 
     this.informationService = new this.hap.Service.AccessoryInformation()
-      .setCharacteristic(Characteristic.Manufacturer, "Adafruit Industries")
-      .setCharacteristic(Characteristic.Model, "VEML7700");
+      .setCharacteristic(this.Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(this.Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
   }
@@ -60,10 +61,10 @@ class Veml7700Accessory implements AccessoryPlugin {
     var newValue = await this.checkContactSensorState();
     if (newValue != this.contactState) {
       this.contactState = newValue;
-      this.log.info("Contact: " + (this.contactState == Characteristic.ContactSensorState.CONTACT_DETECTED ? 
+      this.log.info("Contact: " + (this.contactState == this.Characteristic.ContactSensorState.CONTACT_DETECTED ? 
         "DETECTED" : "NOT_DETECTED"));
 
-      this.sensorService.getCharacteristic(Characteristic.ContactSensorState)
+      this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState)
         .updateValue(this.contactState);
     }
 
@@ -94,10 +95,10 @@ class Veml7700Accessory implements AccessoryPlugin {
     }
 
     if (result) {
-      return Characteristic.ContactSensorState.CONTACT_DETECTED;
+      return this.Characteristic.ContactSensorState.CONTACT_DETECTED;
     }
 
-    return Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+    return this.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
   }
 
   /*

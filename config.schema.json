@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "homebridge-veml7700-sensor",
+    "pluginAlias": "Adafruit VEML7700 Lux Sensor",
     "pluginType": "accessory",
     "singular": false,
     "schema": {
@@ -7,7 +7,6 @@
       "properties": {
         "name": {
           "title": "Name",
-          "default": "Homebridge VEML7700 Sensor",
           "type": "string",
           "minLength": 1,
           "required": true
