@@ -8,9 +8,8 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "npm run clean && tsc && npm test",
-    "test": "jest --collect-coverage",
-    "prepublishOnly": "npm run build",
-    "postpublish": "npm run clean"
+    "build-release": "tsc --project tsconfig.release.json",    
+    "test": "jest --collect-coverage"
   },
   "files": [
     "LICENSE",
