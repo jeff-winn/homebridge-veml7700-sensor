@@ -12,6 +12,7 @@
     "test": "jest --collect-coverage"
   },
   "files": [
+    "README",
     "LICENSE",
     "dist",
     "config.schema.json"
