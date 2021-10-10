@@ -26,7 +26,7 @@ jobs:
         name: dist
         path: dist/
   
-  publish-npm:
+  publish:
     needs: build
     runs-on: ubuntu-latest
     steps:
