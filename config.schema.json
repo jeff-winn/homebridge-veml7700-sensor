@@ -7,6 +7,7 @@
       "properties": {
         "name": {
           "title": "Name",
+          "default": "Adafruit VEML7700 Lux Sensor",
           "type": "string",
           "minLength": 1,
           "required": true
