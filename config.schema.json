@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "veml7700",
+    "pluginAlias": "Homebridge VEML7700 Sensor",
     "pluginType": "accessory",
     "singular": false,
     "schema": {

@@ -1,7 +1,7 @@
 {
   "name": "homebridge-veml7700-sensor",
   "displayName": "Homebridge VEML7700 Sensor",
-  "description": "An accessory plugin for the Adafruit VEML7700 light sensor.",
+  "description": "An accessory plugin for the Adafruit VEML7700 lux sensor.",
   "license": "ISC",
   "homepage": "https://github.com/jeff-winn/homebridge-veml7700-sensor",
   "main": "dist/index.js",
@@ -12,6 +12,7 @@
     "test": "jest --collect-coverage"
   },
   "files": [
+    "README.md",
     "LICENSE",
     "dist",
     "config.schema.json"

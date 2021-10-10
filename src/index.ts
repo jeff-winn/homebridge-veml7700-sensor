@@ -17,7 +17,7 @@ import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
  * Initializer function called when the plugin is loaded.
  */
 export = (api: API) => {
-  api.registerAccessory("veml7700", Veml7700Accessory);
+  api.registerAccessory("Homebridge VEML7700 Sensor", Veml7700Accessory);
 };
 
 class Veml7700Accessory implements AccessoryPlugin {
@@ -47,7 +47,7 @@ class Veml7700Accessory implements AccessoryPlugin {
       .on(CharacteristicEventTypes.GET, this.onContactSensorGetCallback.bind(this));
 
     this.informationService = new this.hap.Service.AccessoryInformation()
-      .setCharacteristic(this.Characteristic.Manufacturer, "Adafruit Industries")
+      .setCharacteristic(this.Characteristic.Manufacturer, "Jeff Winn")
       .setCharacteristic(this.Characteristic.Model, "VEML7700");
 
     log.info("Sensor finished initializing!");
