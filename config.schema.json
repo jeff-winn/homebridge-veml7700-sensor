@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "Adafruit VEML7700 Lux Sensor",
+    "pluginAlias": "veml7700",
     "pluginType": "accessory",
     "singular": false,
     "schema": {
