@@ -56,8 +56,9 @@ export class Veml7700Accessory implements AccessoryPlugin {
         let newValue = await this.checkContactSensorState();
         if (newValue != this.contactState) {
           this.contactState = newValue;
-          this.log.info("Contact: " + (this.contactState == this.Characteristic.ContactSensorState.CONTACT_DETECTED ? 
-            "DETECTED" : "NOT_DETECTED"));
+          this.log.info("Contact: " + 
+            (this.contactState == this.Characteristic.ContactSensorState.CONTACT_DETECTED ? "DETECTED" : "NOT_DETECTED") + 
+            " @ " + newValue);
     
           this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState)
             .updateValue(this.contactState);
