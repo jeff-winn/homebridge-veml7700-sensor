@@ -55,20 +55,24 @@ class Veml7700Accessory implements AccessoryPlugin {
   
   private beginPollingContactSensorState(): void {
     setTimeout(this.monitorContactSensorState.bind(this), this.pollingInterval);
+    this.log.debug("Restarted timer: " + this.pollingInterval);
   }
 
   private async monitorContactSensorState(): Promise<void> {
-    var newValue = await this.checkContactSensorState();
-    if (newValue != this.contactState) {
-      this.contactState = newValue;
-      this.log.info("Contact: " + (this.contactState == this.Characteristic.ContactSensorState.CONTACT_DETECTED ? 
-        "DETECTED" : "NOT_DETECTED"));
-
-      this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState)
-        .updateValue(this.contactState);
+    try {
+      let newValue = await this.checkContactSensorState();
+      if (newValue != this.contactState) {
+        this.contactState = newValue;
+        this.log.info("Contact: " + (this.contactState == this.Characteristic.ContactSensorState.CONTACT_DETECTED ? 
+          "DETECTED" : "NOT_DETECTED"));
+  
+        this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState)
+          .updateValue(this.contactState);
+      }  
     }
-
-    this.beginPollingContactSensorState();
+    finally {
+      this.beginPollingContactSensorState();
+    }
   }
   
   private onContactSensorGetCallback(callback: CharacteristicGetCallback): void {
@@ -76,14 +80,16 @@ class Veml7700Accessory implements AccessoryPlugin {
   }
 
   private async checkContactSensorState(): Promise<number> {
-    var result = false;
+    this.log.debug("Checking the state of the sensor...");
 
-    var data = await this.client.inspect();
+    let result = false;
+
+    let data = await this.client.inspect();
     if (data === undefined) {
       this.log.warn("State of the sensor was not returned.");  
     }
     else {
-      var lux = data.lux;
+      let lux = data.lux;
       this.log.debug("Lux: " + lux);
 
       if (this.config.minimum === undefined) {

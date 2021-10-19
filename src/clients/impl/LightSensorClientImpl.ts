@@ -8,7 +8,7 @@ export class LightSensorClientImpl implements LightSensorClient {
     }
 
     async inspect(): Promise<LuxResponse | undefined> {       
-        var response = await fetch(this.url);
+        let response = await fetch(this.url);
         return await response.json() as LuxResponse;
     }
 }
