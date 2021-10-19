@@ -64,6 +64,9 @@ export class Veml7700Accessory implements AccessoryPlugin {
             .updateValue(this.contactState);
         }  
       }
+      catch (err) {
+        this.log.error("An error occurred while checking the sensor.", err);
+      }
       finally {
         this.beginPollingContactSensorState();
       }
