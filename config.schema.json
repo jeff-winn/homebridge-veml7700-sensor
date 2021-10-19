@@ -29,9 +29,9 @@
         "minimum": {
           "title": "Minimum",
           "description": "The minimum lux required to trigger the contact sensor.",
-          "type": "integer",
+          "type": "number",
           "required": true,
-          "default": 100
+          "default": 100.0
         }
       }
     }
