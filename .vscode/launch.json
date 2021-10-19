@@ -8,6 +8,9 @@
 			"name": "Launch Program",
 			"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
 			"request": "launch",
+			"args": [
+				"-D"
+			],
 			"skipFiles": [
 				"<node_internals>/**"
 			],
