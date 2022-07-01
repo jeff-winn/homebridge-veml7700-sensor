@@ -5,16 +5,20 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Program",
-			"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+			"name": "Launch Homebridge",
 			"request": "launch",
-			"args": [
-				"-D"
-			],
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"type": "pwa-node"
+			"type": "pwa-node",
+			"preLaunchTask": "build",
+			"windows": {
+				"program": "${env:APPDATA}\\npm\\node_modules\\homebridge\\bin\\homebridge",
+				"env": {
+					"FORCE_COLOR": "1",
+					"DEBUG": "homebridge-veml7700-sensor"
+				}
+			}
 		}
 	]
 }
