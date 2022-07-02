@@ -2,7 +2,7 @@ import { It, Mock, Times } from 'moq.ts';
 
 import * as settings from '../../src/settings';
 
-import { HomebridgeImitationLogger } from '../../src/diagnostics/platformLogger';
+import { HomebridgeImitationLogger } from '../../src/diagnostics/logger';
 import { ConsoleWrapper } from '../../src/diagnostics/primitives/consoleWrapper';
 import { Environment } from '../../src/primitives/environment';
 import { Localization } from '../../src/primitives/localization';
