@@ -33,10 +33,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  check:  
+    runs-on: ubuntu-latest
+    needs: analyze
+  
+    # Only run the checks for pull requests
+    if: ${{ github.event_name == 'pull_request' }}
+
+    steps:
     - name: Check SonarCloud Quality Gate
       uses: SonarSource/sonarqube-quality-gate-action@master
-      if: ${{ github.event_name == 'pull_request' }} # Only check the quality gate if it's a pull request
       timeout-minutes: 5 # Force to fail step after specific time
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
