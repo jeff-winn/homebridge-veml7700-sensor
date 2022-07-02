@@ -11,7 +11,12 @@ import {
 } from "homebridge";
 import { LightSensorClientImpl } from "./clients/impl/LightSensorClientImpl";
 import { LightSensorClient } from "./clients/LightSensorClient";
-import { Veml7700AccessoryConfig } from "./Veml7700AccessoryConfig";
+
+export interface Veml7700AccessoryConfig extends AccessoryConfig {
+  pollingInterval: number;
+  url: string;
+  minimum: number | undefined;
+}
 
 export class Veml7700Accessory implements AccessoryPlugin {
     private readonly config: Veml7700AccessoryConfig;
