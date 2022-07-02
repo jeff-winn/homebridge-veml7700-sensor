@@ -3,7 +3,7 @@ import {
     HAP, Logging, Service 
 } from 'homebridge';
 
-import { LightSensorClientImpl } from './clients/impl/LightSensorClientImpl';
+import { LightSensorClientImpl } from './clients/LightSensorClient';
 import { LightSensorClient } from './clients/LightSensorClient';
 
 export interface Veml7700AccessoryConfig extends AccessoryConfig {
