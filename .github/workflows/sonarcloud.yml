@@ -1,10 +1,13 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: SonarCloud analysis
+name: SonarCloud
 
 on: [ push, pull_request ]
 
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+  
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
   NODE_VERSION: 16
@@ -31,4 +34,15 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Check Quality Gate
+      uses: SonarSource/sonarqube-quality-gate-action@master
+
+      # Only run the checks for pull requests
+      if: ${{ github.event_name == 'pull_request' }}
+
+      # Force to fail step after specific time
+      timeout-minutes: 5
+      env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

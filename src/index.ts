@@ -1,9 +1,8 @@
-import { API } from "homebridge";
-import { Veml7700Accessory } from "./Veml7700Accessory";
+import { API } from 'homebridge';
 
-/*
- * Initializer function called when the plugin is loaded.
- */
-export = (api: API) => {
-  api.registerAccessory("Homebridge VEML7700 Sensor", Veml7700Accessory);
+import { Veml7700Accessory } from './accessory';
+import { ACCESSORY_NAME } from '../src/settings';
+
+export default (api: API) => {
+    api.registerAccessory(ACCESSORY_NAME, Veml7700Accessory);
 };
