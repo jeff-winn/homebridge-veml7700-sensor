@@ -3,8 +3,7 @@ import {
     HAP, Logging, Service 
 } from 'homebridge';
 
-import { LightSensorClientImpl } from './clients/LightSensorClient';
-import { LightSensorClient } from './clients/LightSensorClient';
+import { LightSensorClient, LightSensorClientImpl } from './clients/lightSensorClient';
 
 export interface Veml7700AccessoryConfig extends AccessoryConfig {
   pollingInterval: number;
