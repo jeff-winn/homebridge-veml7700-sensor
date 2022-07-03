@@ -15,13 +15,28 @@ const CONTACT_SENSOR_OPEN = 1;
  */
 const CONTACT_SENSOR_CLOSED = 0;
 
+/**
+ * Identifies a rain sensor.
+ */
 export interface RainSensor {
+    /**
+     * Gets the underlying service.
+     */
     getUnderlyingService(): Service | undefined;
 
+    /**
+     * Initializes the sensor.
+     */
     init(): void;
 
+    /**
+     * Starts the sensor.
+     */
     start(): void;
 
+    /**
+     * Stops the sensor.
+     */
     stop(): void;
 }
 
