@@ -2,13 +2,9 @@ import {
     AccessoryConfig, AccessoryPlugin, API, APIEvent, Logging, Service
 } from 'homebridge';
 
-import { LightSensorClientImpl } from './clients/lightSensorClient';
-import { HomebridgeImitationLogger, Logger } from './diagnostics/logger';
-import { ConsoleWrapperImpl } from './diagnostics/primitives/consoleWrapper';
-import { NodeJsEnvironment } from './primitives/environment';
-import { TimerImpl } from './primitives/timer';
-import { AccessoryInformation, AccessoryInformationImpl } from './services/accessoryInformation';
-import { RainSensor, RainSensorImpl } from './services/rainSensor';
+import { AccessoryServiceFactory, AccessoryServiceFactoryImpl } from './primitives/accessoryServiceFactory';
+import { AccessoryInformation } from './services/accessoryInformation';
+import { RainSensor } from './services/rainSensor';
 
 export interface Veml7700AccessoryConfig extends AccessoryConfig {
     pollingInterval: number;
@@ -46,7 +42,9 @@ export class Veml7700Accessory implements AccessoryPlugin {
     public getServices(): Service[] {
         const result: Service[] = [];
 
-        this.accessoryInformation = this.createAccessoryInformation();
+        const factory = this.getServiceFactory();
+
+        this.accessoryInformation = factory.createAccessoryInformation();
         this.accessoryInformation.init();
 
         const accessoryInformationService = this.accessoryInformation.getUnderlyingService();
@@ -54,7 +52,7 @@ export class Veml7700Accessory implements AccessoryPlugin {
             result.push(accessoryInformationService);
         }
 
-        this.rainSensor = this.createRainSensor();
+        this.rainSensor = factory.createRainSensor();
         this.rainSensor.init();
 
         const rainSensorService = this.rainSensor.getUnderlyingService();        
@@ -64,21 +62,8 @@ export class Veml7700Accessory implements AccessoryPlugin {
 
         return result;        
     }
-
-    protected createAccessoryInformation(): AccessoryInformation {
-        return new AccessoryInformationImpl(this, this.api);
-    }
-
-    protected createRainSensor(): RainSensor {
-        const log = this.createLogger();
-
-        return new RainSensorImpl(this.config.name, this.config, 
-            new TimerImpl(), 
-            new LightSensorClientImpl(this.config.url, log),
-            log, this, this.api);
-    }
-
-    protected createLogger(): Logger {
-        return new HomebridgeImitationLogger(new NodeJsEnvironment(), this.config.name, undefined, new ConsoleWrapperImpl());
+    
+    private getServiceFactory(): AccessoryServiceFactory {
+        return new AccessoryServiceFactoryImpl(this, this.api, this.config);
     }
 }
