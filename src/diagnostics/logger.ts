@@ -1,8 +1,8 @@
 import chalk, { Chalk } from 'chalk';
 import { LogLevel } from 'homebridge';
+import util from 'util';
 
 import { Environment } from '../primitives/environment';
-import { Localization } from '../primitives/localization';
 import { PLUGIN_ID } from '../settings';
 import { ConsoleWrapper } from './primitives/consoleWrapper';
 
@@ -47,7 +47,7 @@ export class HomebridgeImitationLogger implements Logger {
     private color: Chalk;
 
     public constructor(private env: Environment, private platformName: string | undefined, 
-        private name: string | undefined, private console: ConsoleWrapper, private locale: Localization) {
+        private name: string | undefined, private console: ConsoleWrapper) {
 
         this.color = new chalk.Instance({ level: 1 });
     }
@@ -73,8 +73,8 @@ export class HomebridgeImitationLogger implements Logger {
             // Debug logging is not currently enabled, just ignore the message.
             return;
         }
-
-        let msg = this.locale.format(message, ...parameters);
+        
+        let msg = util.format(message, ...parameters);
         let println = this.console.stdout;
 
         switch (level) {
