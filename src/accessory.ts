@@ -3,7 +3,7 @@ import {
 } from 'homebridge';
 
 import { LightSensorClientImpl } from './clients/lightSensorClient';
-import { HomebridgeImitationLogger } from './diagnostics/logger';
+import { HomebridgeImitationLogger, Logger } from './diagnostics/logger';
 import { ConsoleWrapperImpl } from './diagnostics/primitives/consoleWrapper';
 import { NodeJsEnvironment } from './primitives/environment';
 import { TimerImpl } from './primitives/timer';
@@ -70,10 +70,15 @@ export class Veml7700Accessory implements AccessoryPlugin {
     }
 
     protected createRainSensor(): RainSensor {
+        const log = this.createLogger();
+
         return new RainSensorImpl(this.config.name, this.config, 
             new TimerImpl(), 
-            new LightSensorClientImpl(this.config.url), 
-            new HomebridgeImitationLogger(new NodeJsEnvironment(), this.config.name, undefined, new ConsoleWrapperImpl()), 
-            this, this.api);
+            new LightSensorClientImpl(this.config.url, log),
+            log, this, this.api);
+    }
+
+    protected createLogger(): Logger {
+        return new HomebridgeImitationLogger(new NodeJsEnvironment(), this.config.name, undefined, new ConsoleWrapperImpl());
     }
 }
