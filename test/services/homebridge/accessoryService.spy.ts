@@ -1,4 +1,4 @@
-import { Characteristic, Service } from 'homebridge';
+import { Characteristic, Service } from 'hap-nodejs';
 import { AbstractAccessoryService } from '../../../src/services/homebridge/abstractAccessoryService';
 
 export class AccessoryServiceSpy extends AbstractAccessoryService {
