@@ -1,9 +1,12 @@
 import {
     AccessoryConfig, AccessoryPlugin, API, APIEvent, Logging, Service
 } from 'homebridge';
-import { LightSensorClientImpl } from './clients/lightSensorClient';
-import { TimerImpl } from './primitives/timer';
 
+import { LightSensorClientImpl } from './clients/lightSensorClient';
+import { HomebridgeImitationLogger } from './diagnostics/logger';
+import { ConsoleWrapperImpl } from './diagnostics/primitives/consoleWrapper';
+import { NodeJsEnvironment } from './primitives/environment';
+import { TimerImpl } from './primitives/timer';
 import { AccessoryInformation, AccessoryInformationImpl } from './services/accessoryInformation';
 import { RainSensor, RainSensorImpl } from './services/rainSensor';
 
@@ -29,11 +32,13 @@ export class Veml7700Accessory implements AccessoryPlugin {
     private onFinishedLaunching(): void {
         this.rainSensor?.start();
 
-        // log.info('Sensor finished initializing!');
+        this.log.info('Sensor finished initializing.');
     }
 
     private onShutdown(): void {
         this.rainSensor?.stop();
+
+        this.log.info('Sensor shutdown.');
     }
   
     /* While named get services, this is actually what initalizes the
@@ -65,6 +70,10 @@ export class Veml7700Accessory implements AccessoryPlugin {
     }
 
     protected createRainSensor(): RainSensor {
-        return new RainSensorImpl(this.config.name, new TimerImpl(), new LightSensorClientImpl(this.config.url), this, this.api);
+        return new RainSensorImpl(this.config.name, this.config, 
+            new TimerImpl(), 
+            new LightSensorClientImpl(this.config.url), 
+            new HomebridgeImitationLogger(new NodeJsEnvironment(), this.config.name, undefined, new ConsoleWrapperImpl()), 
+            this, this.api);
     }
 }
