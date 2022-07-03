@@ -58,10 +58,6 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
     public init(): void {        
         this.sensorService = this.createService();
         this.contactState = this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState);
-        
-        // this.client = new LightSensorClientImpl(this.config.url);
-
-        // this.pollingInterval = this.config.pollingInterval * 1000;
     }
 
     protected createService(): Service {
