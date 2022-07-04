@@ -22,16 +22,14 @@ export interface ErrorResponse {
  * A client which can inspect the sensor.
  */
 export interface LightSensorClient {
-    inspect(): Promise<LuxResponse | undefined>;
+    inspect(): Promise<LuxResponse>;
 }
 
 export class LightSensorClientImpl implements LightSensorClient {
     public constructor(private url: string, private log: Logger) { }
 
-    public async inspect(): Promise<LuxResponse | undefined> {       
-        const id = uuid();
-        
-        const response = await this.executeCore(id, this.url);
+    public async inspect(): Promise<LuxResponse> {
+        const response = await this.executeCore(uuid(), this.url);
         this.throwIfNotOk(response);
 
         return await response.json() as LuxResponse;
