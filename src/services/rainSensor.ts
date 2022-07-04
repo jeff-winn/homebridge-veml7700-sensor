@@ -72,7 +72,7 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         this.timer.start(this.pollOnce.bind(this), this.config.pollingInterval * 1000);
     }
 
-    private async pollOnce(): Promise<void> {   
+    protected async pollOnce(): Promise<void> {   
         try {
             const newValue = await this.checkSensor();
             if (this.lastValue === undefined || this.lastValue !== newValue) {
