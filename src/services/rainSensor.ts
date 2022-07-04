@@ -76,7 +76,7 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         try {
             const newValue = await this.checkSensor();
             if (this.lastValue === undefined || this.lastValue !== newValue) {
-                this.lastValue = newValue;
+                this.setLastValue(newValue);
                 this.log.info(`Contact state changed: ${newValue === CONTACT_SENSOR_OPEN ? 'OPEN' : 'CLOSED'}`);
 
                 this.contactState!.updateValue(newValue);
@@ -86,6 +86,10 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         } finally {
             this.startKeepAlive();
         }
+    }
+
+    protected setLastValue(value: number | undefined): void {
+        this.lastValue = value;
     }
 
     public stop(): void {

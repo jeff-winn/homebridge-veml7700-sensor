@@ -12,6 +12,10 @@ export class RainSensorImplSpy extends RainSensorImpl {
         return super.createService();
     }
 
+    public unsafeSetLastValue(value: number | undefined): void {
+        this.setLastValue(value);
+    }
+
     public unsafePollOnce(): Promise<void> {
         return this.pollOnce();
     }
