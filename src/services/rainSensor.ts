@@ -72,14 +72,14 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         this.timer.start(this.pollOnce.bind(this), this.config.pollingInterval * 1000);
     }
 
-    private async pollOnce(): Promise<void> {        
+    protected async pollOnce(): Promise<void> {   
         try {
-            const newValue = await this.check();
+            const newValue = await this.checkSensor();
             if (this.lastValue === undefined || this.lastValue !== newValue) {
-                this.lastValue = newValue;
+                this.setLastValue(newValue);
                 this.log.info(`Contact state changed: ${newValue === CONTACT_SENSOR_OPEN ? 'OPEN' : 'CLOSED'}`);
 
-                this.contactState?.updateValue(newValue);
+                this.contactState!.updateValue(newValue);
             }  
         } catch (err) {
             this.log.error('An error occurred while checking the sensor.', err);
@@ -88,33 +88,28 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         }
     }
 
+    protected setLastValue(value: number | undefined): void {
+        this.lastValue = value;
+    }
+
     public stop(): void {
         this.timer.stop();
     }
   
-    private async check(): Promise<number> {
+    private async checkSensor(): Promise<number> {
         this.log.debug('Checking the state of the sensor...');
   
         let result = false;
   
-        const data = await this.client.inspect();
-        if (data === undefined) {
-            this.log.warn('State of the sensor was not returned.');
+        const data = await this.client.inspect();        
+        const lux = data.lux;        
+
+        if (this.config.minimum === undefined) {
+            result = lux > 0;
         } else {
-            const lux = data.lux;
-            this.log.debug(`Lux: ${lux}`);
+            result = lux >= this.config.minimum;
+        }              
   
-            if (this.config.minimum === undefined) {
-                result = lux > 0;
-            } else {
-                result = lux >= this.config.minimum;
-            }      
-        }
-  
-        if (result) {
-            return CONTACT_SENSOR_OPEN;
-        }
-  
-        return CONTACT_SENSOR_CLOSED;
+        return result ? CONTACT_SENSOR_OPEN : CONTACT_SENSOR_CLOSED;
     }
 }

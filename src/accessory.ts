@@ -17,6 +17,7 @@ export class Veml7700Accessory implements AccessoryPlugin {
 
     private accessoryInformation?: AccessoryInformation;
     private rainSensor?: RainSensor;
+    private initialized = false;
   
     public constructor(private log: Logging, c: AccessoryConfig, private api: API) {
         this.config = c as Veml7700AccessoryConfig;
@@ -25,37 +26,49 @@ export class Veml7700Accessory implements AccessoryPlugin {
         api.on(APIEvent.SHUTDOWN, this.onShutdown.bind(this));
     }
 
-    private onFinishedLaunching(): void {
-        this.rainSensor?.start();
+    protected onFinishedLaunching(): void {
+        this.ensureInitialized();
+        
+        this.rainSensor!.start();
 
         this.log.info('Sensor finished initializing.');
     }
 
-    private onShutdown(): void {
+    protected onShutdown(): void {
         this.rainSensor?.stop();
 
         this.log.info('Sensor shutdown.');
     }
-  
-    /* While named get services, this is actually what initalizes the
-       accessory given that it's called before any events get executed. */
-    public getServices(): Service[] {
-        const result: Service[] = [];
+
+    protected ensureInitialized(): void {
+        if (this.initialized) {
+            return;
+        }
 
         const factory = this.getServiceFactory();
 
         this.accessoryInformation = factory.createAccessoryInformation();
         this.accessoryInformation.init();
 
-        const accessoryInformationService = this.accessoryInformation.getUnderlyingService();
+        this.rainSensor = factory.createRainSensor();
+        this.rainSensor.init();
+
+        this.initialized = true;
+    }
+  
+    /* While named get services, this is actually what initalizes the
+       accessory given that it's called before any events get executed. */
+    public getServices(): Service[] {
+        this.ensureInitialized();
+
+        const result: Service[] = [];
+
+        const accessoryInformationService = this.accessoryInformation!.getUnderlyingService();
         if (accessoryInformationService !== undefined) {
             result.push(accessoryInformationService);
         }
 
-        this.rainSensor = factory.createRainSensor();
-        this.rainSensor.init();
-
-        const rainSensorService = this.rainSensor.getUnderlyingService();        
+        const rainSensorService = this.rainSensor!.getUnderlyingService();        
         if (rainSensorService !== undefined) {
             result.push(rainSensorService);
         }
@@ -63,7 +76,7 @@ export class Veml7700Accessory implements AccessoryPlugin {
         return result;        
     }
     
-    private getServiceFactory(): AccessoryServiceFactory {
+    protected getServiceFactory(): AccessoryServiceFactory {
         return new AccessoryServiceFactoryImpl(this, this.api, this.config);
     }
 }
