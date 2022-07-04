@@ -63,18 +63,14 @@ export class Veml7700Accessory implements AccessoryPlugin {
 
         const result: Service[] = [];
 
-        if (this.accessoryInformation !== undefined) {
-            const accessoryInformationService = this.accessoryInformation.getUnderlyingService();
-            if (accessoryInformationService !== undefined) {
-                result.push(accessoryInformationService);
-            }
+        const accessoryInformationService = this.accessoryInformation!.getUnderlyingService();
+        if (accessoryInformationService !== undefined) {
+            result.push(accessoryInformationService);
         }
 
-        if (this.rainSensor !== undefined) {
-            const rainSensorService = this.rainSensor.getUnderlyingService();        
-            if (rainSensorService !== undefined) {
-                result.push(rainSensorService);
-            }
+        const rainSensorService = this.rainSensor!.getUnderlyingService();        
+        if (rainSensorService !== undefined) {
+            result.push(rainSensorService);
         }
 
         return result;        
