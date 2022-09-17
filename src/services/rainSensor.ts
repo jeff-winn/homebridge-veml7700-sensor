@@ -43,6 +43,7 @@ export interface RainSensor {
 export class RainSensorImpl extends AbstractAccessoryService implements RainSensor {
     private sensorService?: Service;
     private contactState?: Characteristic;
+    private lux?: Characteristic;
 
     private lastValue?: number;
 
@@ -57,7 +58,9 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
 
     public init(): void {        
         this.sensorService = this.createService();
+
         this.contactState = this.sensorService.getCharacteristic(this.Characteristic.ContactSensorState);
+        this.lux = this.sensorService.getCharacteristic(this.Characteristic.CurrentAmbientLightLevel);
     }
 
     protected createService(): Service {
@@ -96,13 +99,15 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
         this.timer.stop();
     }
   
-    private async checkSensor(): Promise<number> {
+    protected async checkSensor(): Promise<number> {
         this.log.debug('Checking the state of the sensor...');
   
         let result = false;
   
-        const data = await this.client.inspect();        
-        const lux = data.lux;        
+        const data = await this.client.inspect();
+        
+        const lux = data.lux;
+        this.lux!.updateValue(lux);
 
         if (this.config.minimum === undefined) {
             result = lux > 0;

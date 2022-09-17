@@ -19,4 +19,8 @@ export class RainSensorImplSpy extends RainSensorImpl {
     public unsafePollOnce(): Promise<void> {
         return this.pollOnce();
     }
+
+    public unsafeCheckSensor(): Promise<number> {
+        return this.checkSensor();
+    }
 }

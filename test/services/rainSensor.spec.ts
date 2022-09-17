@@ -82,16 +82,51 @@ describe('RainSensorImpl', () => {
         timer.verify(o => o.stop(), Times.Once());
     });
 
+    it('should update the lux characteristic when checking the sensor', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
+
+        const target = new RainSensorImplSpy('hello', {
+            name: 'hello',
+            accessory: 'world',
+            minimum: 1,
+            pollingInterval: 1,
+            url: 'http://localhost:8080/api/v1/sensor/16'
+        }, timer.object(), client.object(), log.object(), accessory.object(), api.object());
+
+        target.service = service.object();
+        target.init();
+
+        const r: LuxResponse = {
+            lux: 100,
+            whiteLight: 100
+        };
+
+        client.setup(o => o.inspect()).returns(Promise.resolve(r));
+
+        await target.unsafeCheckSensor();
+        luxCharacteristic.verify(o => o.updateValue(100), Times.Once());
+    });
+
     it('should not update the contact state when the value does not change', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
+
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
 
         const contactState = new Mock<Characteristic>();
         contactState.setup(o => o.updateValue(It.IsAny())).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
 
         const target = new RainSensorImplSpy('hello', {
             name: 'hello',
@@ -126,8 +161,12 @@ describe('RainSensorImpl', () => {
         const contactState = new Mock<Characteristic>();
         contactState.setup(o => o.updateValue(It.IsAny())).returns(contactState.object());
 
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
 
         const target = new RainSensorImplSpy('hello', {
             name: 'hello',
@@ -159,11 +198,15 @@ describe('RainSensorImpl', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
 
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
         const contactState = new Mock<Characteristic>();
         contactState.setup(o => o.updateValue(It.IsAny())).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
 
         const target = new RainSensorImplSpy('hello', {
             name: 'hello',
@@ -195,11 +238,15 @@ describe('RainSensorImpl', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
 
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
         const contactState = new Mock<Characteristic>();
         contactState.setup(o => o.updateValue(It.IsAny())).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
 
         const target = new RainSensorImplSpy('hello', {
             name: 'hello',
@@ -231,11 +278,15 @@ describe('RainSensorImpl', () => {
         log.setup(o => o.info(It.IsAny())).returns(undefined);
         timer.setup(o => o.start(It.IsAny(), It.IsAny())).returns(undefined);
 
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
         const contactState = new Mock<Characteristic>();
         contactState.setup(o => o.updateValue(It.IsAny())).returns(contactState.object());
 
         const service = new Mock<Service>();
         service.setup(o => o.getCharacteristic(Characteristic.ContactSensorState)).returns(contactState.object());
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
 
         const target = new RainSensorImplSpy('hello', {
             name: 'hello',
