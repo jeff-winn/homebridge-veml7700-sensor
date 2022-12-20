@@ -6,7 +6,7 @@ name: prerelease
 on: 
   push: 
     branches:
-      - 'main'
+    - 'main'
 
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
@@ -50,7 +50,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         registry-url: 'https://registry.npmjs.org/'
 
-    - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+${GITHUB_SHA::8} --git-tag-version false
-    - run: npm publish
+    - run: npm version prerelease --preid beta.${GITHUB_SHA::8} --git-tag-version false
+    - run: npm publish --tag prerelease
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
