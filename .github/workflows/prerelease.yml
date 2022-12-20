@@ -4,7 +4,9 @@
 name: prerelease
 
 on: 
-  push: main
+  push: 
+    branches:
+      - 'main'
 
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
@@ -30,7 +32,7 @@ jobs:
       with:
         name: dist
         path: dist/
-  
+
   publish:
     needs: build
     runs-on: ubuntu-latest
