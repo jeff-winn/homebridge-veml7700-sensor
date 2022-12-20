@@ -52,5 +52,5 @@ jobs:
 
     - run: npm version prerelease --preid beta.${GITHUB_RUN_ID}+${GITHUB_SHA::8} --git-tag-version false
     - run: npm publish
-     env:
-       NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
