@@ -51,6 +51,6 @@ jobs:
         registry-url: 'https://registry.npmjs.org/'
 
     - run: npm version prerelease --preid beta.${GITHUB_SHA::8} --git-tag-version false
-    - run: npm publish --tag prerelease
+    - run: npm publish --tag next
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
