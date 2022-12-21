@@ -56,13 +56,6 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
-    - name: Bump version
-      run: |
-        git config user.name 'github-actions[bot]'
-        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git commit -am "Automated updates"
-        git push
-
   publish-release:
     needs: build
     runs-on: ubuntu-latest
@@ -89,3 +82,10 @@ jobs:
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+    - name: Persist version
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git commit -am "Bumping version"
+        git push
