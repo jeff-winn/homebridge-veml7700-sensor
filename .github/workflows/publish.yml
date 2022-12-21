@@ -4,6 +4,9 @@
 name: Publish
 
 on:
+  push:
+    branches:
+      - 'main'
   release:
     types: [published]
 
@@ -31,9 +34,35 @@ jobs:
         name: dist
         path: dist/
   
-  publish:
+  publish-preview:
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Download dist
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org/'
+
+    - run: npm version preminor --preid preview.${GITHUB_SHA::8} --no-git-tag-version
+    - run: npm publish --tag next
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+  publish-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+
     steps:
     - uses: actions/checkout@v2
       
@@ -51,7 +80,7 @@ jobs:
     - name: Set environment variables
       uses: FranzDiebold/github-env-vars-action@v2
 
-    - run: npm version ${{ env.CI_ACTION_REF_NAME }} --git-tag-version false
+    - run: npm version ${{ env.CI_ACTION_REF_NAME }} --no-git-tag-version
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
