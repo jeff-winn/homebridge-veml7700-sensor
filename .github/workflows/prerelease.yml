@@ -11,6 +11,7 @@ on:
 env:
   # See LTS versions supported: https://nodejs.org/en/about/releases/
   NODE_VERSION: 16
+  VERSION: 2.3.0
 
 jobs:
   build:
@@ -50,7 +51,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         registry-url: 'https://registry.npmjs.org/'
 
-    - run: npm version prerelease --preid beta.${GITHUB_SHA::8} --git-tag-version false
+    - run: npm version ${{ env.VERSION }} --preid preview.${GITHUB_SHA::8} --git-tag-version false
     - run: npm publish --tag next
       env:
         NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
