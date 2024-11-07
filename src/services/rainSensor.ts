@@ -47,8 +47,8 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
 
     private lastValue?: number;
 
-    public constructor(private name: string, private config: Veml7700AccessoryConfig, private timer: Timer, 
-        private client: LightSensorClient, private log: Logger, protected accessory: AccessoryPlugin, protected api: API) { 
+    public constructor(private readonly name: string, private readonly config: Veml7700AccessoryConfig, private readonly timer: Timer, 
+        private readonly client: LightSensorClient, private readonly log: Logger, protected accessory: AccessoryPlugin, protected api: API) { 
         super(accessory, api);
     }    
 
@@ -106,7 +106,13 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
   
         const data = await this.client.inspect();
         
-        const lux = data.lux;
+        let lux = data.lux;
+        if (lux === 0) {
+            // The sensor characteristic cannot support a value of zero, set the value to the absolute minimium required.
+            // See for more information: https://developers.homebridge.io/#/characteristic/CurrentAmbientLightLevel
+            lux = 0.0001;
+        }
+
         this.lux!.updateValue(lux);
 
         if (this.config.minimum === undefined) {

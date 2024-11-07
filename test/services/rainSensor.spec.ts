@@ -82,6 +82,37 @@ describe('RainSensorImpl', () => {
         timer.verify(o => o.stop(), Times.Once());
     });
 
+    it('should update the lux characteristic with minimum value when zero', async () => {
+        log.setup(o => o.debug(It.IsAny())).returns(undefined);
+
+        const luxCharacteristic = new Mock<Characteristic>();
+        luxCharacteristic.setup(o => o.updateValue(It.IsAny())).returns(luxCharacteristic.object());
+
+        const service = new Mock<Service>();
+        service.setup(o => o.getCharacteristic(Characteristic.CurrentAmbientLightLevel)).returns(luxCharacteristic.object());
+
+        const target = new RainSensorImplSpy('hello', {
+            name: 'hello',
+            accessory: 'world',
+            minimum: 1,
+            pollingInterval: 1,
+            url: 'http://localhost:8080/api/v1/sensor/16'
+        }, timer.object(), client.object(), log.object(), accessory.object(), api.object());
+
+        target.service = service.object();
+        target.init();
+
+        const r: LuxResponse = {
+            lux: 0,
+            whiteLight: 0
+        };
+
+        client.setup(o => o.inspect()).returns(Promise.resolve(r));
+
+        await target.unsafeCheckSensor();
+        luxCharacteristic.verify(o => o.updateValue(0.0001), Times.Once());
+    });
+
     it('should update the lux characteristic when checking the sensor', async () => {
         log.setup(o => o.debug(It.IsAny())).returns(undefined);
 
