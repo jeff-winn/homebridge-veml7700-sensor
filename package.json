@@ -1,6 +1,6 @@
 {
   "name": "homebridge-veml7700-sensor",
-  "version": "2.3.0",
+  "version": "2.2.0",
   "displayName": "Homebridge VEML7700 Sensor",
   "description": "An accessory plugin for the Adafruit VEML7700 lux sensor.",
   "license": "MIT",
