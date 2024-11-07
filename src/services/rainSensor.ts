@@ -47,8 +47,8 @@ export class RainSensorImpl extends AbstractAccessoryService implements RainSens
 
     private lastValue?: number;
 
-    public constructor(private name: string, private config: Veml7700AccessoryConfig, private timer: Timer, 
-        private client: LightSensorClient, private log: Logger, protected accessory: AccessoryPlugin, protected api: API) { 
+    public constructor(private readonly name: string, private readonly config: Veml7700AccessoryConfig, private readonly timer: Timer, 
+        private readonly client: LightSensorClient, private readonly log: Logger, protected accessory: AccessoryPlugin, protected api: API) { 
         super(accessory, api);
     }    
 
